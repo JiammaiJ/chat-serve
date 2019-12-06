@@ -1,12 +1,9 @@
 const express = require('express')
-
 const app = express()
-
 const Router = require('./router/router')
 // 中间件，body,cookie
 const bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
-
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cookieParser())
@@ -24,7 +21,4 @@ app.all("*", function (req, res, next) {
         next();
 })
 app.use(Router)
-
-app.listen(5000, () => {
-    console.log('running 5000...')
-})
+module.exports = app

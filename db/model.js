@@ -33,6 +33,35 @@ const userSchema = new Schema({
     }
 })
 
-const UserModel = mongoose.model('user',userSchema)
+// 聊天内容存储
+const chatSchema = new Schema({
+    from:{  //发起聊天用户的id
+        type:String,
+        required:true
+    },
+    to:{   //接收用户的id
+        type:String,
+        required:true
+    },
+    content:{
+        type:String,
+        required:true
+    },
+    read:{
+        type:Boolean,
+        default:false
+    },
+    chat_id:{
+        type:String,
+        required:true
+    },
+    time:{
+        type:String,
+        required:true
+    }
+})
 
-exports.UserModel = UserModel;
+const UserModel = mongoose.model('user',userSchema)
+const ChatModel = mongoose.model('chat',chatSchema)
+exports.UserModel = UserModel
+exports.ChatModel = ChatModel

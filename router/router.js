@@ -1,6 +1,6 @@
 const express = require('express')
 const md5 = require('blueimp-md5')
-const {UserModel} = require('../db/model')
+const {UserModel,ChatModel} = require('../db/model')
 
 const router = express.Router()
 const filter = {password: 0, __v: 0}
@@ -104,6 +104,47 @@ router.get('/userinfo',(req,res) => {
                 data:data
             })
         }
+    })
+})
+
+// 根据类型查询所有用户
+router.get('/userlist',(req,res) => {
+    const {type} = req.query
+    UserModel.find({type},filter,(err,userlist) => {
+        if(err){
+            res.send({
+                code:1,
+                msg:'系统错误'
+            })
+        }else{
+            res.send({
+                code:0,
+                data:userlist,
+                msg:'success'
+            })
+        }
+    })
+})
+
+router.get('/msglist',(req,res) => {
+    const userid = req.cookies.userid
+    UserModel.find((err,data) =>{
+        const users = data.reduce((init,item) => {
+            init[item._id] = {username:item.username,header:item.header}
+            return init
+        },{})
+        ChatModel.find({'$or':[{from:userid},{to:userid}]},(err,data) => {
+            if(data){
+                res.send({
+                    code:0,
+                    msg:'success',
+                    data:{
+                        data:data,
+                        users:users
+                    }
+                })
+            } 
+        })
     })
 })
 
