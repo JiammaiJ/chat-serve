@@ -148,4 +148,17 @@ router.get('/msglist',(req,res) => {
     })
 })
 
+// 读取消息了,更改当前用户和聊天用户的read
+router.post('/readmsg',(req,res) => {
+    const {from,to} = req.body
+    ChatModel.updateMany({from,to,read:false},{read:true},{multi: true},(err,data) => {
+       if(data){
+           res.send({
+               code:0,
+               data:data.nModified
+           })
+       }
+    })
+})
+
 module.exports=router;
