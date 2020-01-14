@@ -61,7 +61,22 @@ const chatSchema = new Schema({
     }
 })
 
+
+// soso的接口
+const SosoSchema = new Schema({
+    parentId:{
+        type:String,
+        required:true
+    },
+    name:{
+        type:String,
+        required:true
+    }
+})
+
 const UserModel = mongoose.model('user',userSchema)
 const ChatModel = mongoose.model('chat',chatSchema)
+const SosoModel = mongoose.model('soso',SosoSchema)
 exports.UserModel = UserModel
 exports.ChatModel = ChatModel
+exports.SosoModel = SosoModel

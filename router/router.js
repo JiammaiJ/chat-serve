@@ -1,6 +1,6 @@
 const express = require('express')
 const md5 = require('blueimp-md5')
-const {UserModel,ChatModel} = require('../db/model')
+const {UserModel,ChatModel,SosoModel} = require('../db/model')
 
 const router = express.Router()
 const filter = {password: 0, __v: 0}
@@ -126,6 +126,7 @@ router.get('/userlist',(req,res) => {
     })
 })
 
+// 消息列表
 router.get('/msglist',(req,res) => {
     const userid = req.cookies.userid
     UserModel.find((err,data) =>{
@@ -156,9 +157,98 @@ router.post('/readmsg',(req,res) => {
            res.send({
                code:0,
                data:data.nModified
+           }).save((err,data) => {
+            if(err){
+                res.send({
+                    code:1,
+                    msg:'save error'
+                })
+            }else{
+                res.send({
+                    code:0,
+                    msg:'success'
+                })
+            }
            })
        }
     })
 })
 
+
+// soso的接口
+// 添加分类
+router.post('/soso/addcategory',(req,res) => {
+    const { parentId, name } = req.body
+    new SosoModel({
+        parentId,name
+    }).save((err,data) => {
+        if(err){
+            res.send({
+                msg:'save error',
+                code:1
+            })
+        }else{
+            res.send({
+                msg:'success',
+                code:0,
+                data
+            })
+        }
+    })
+})
+// 根据父类parentId 查找所有的子元素
+router.get('/soso/getcategory',(req,res) => {
+    const { parentId } = req.query
+    SosoModel.find({parentId},(err,data) => {
+        if(err){
+            res.send({
+                msg:'error',
+                code:1,
+            })
+        }else{
+            res.send({
+                msg:'success',
+                code:0,
+                data
+            })
+        }
+    })
+})
+// 根据_id删除元素 
+// 如果parentID=0 删除全部的子元素
+router.delete('/soso/deletecategory',(req,res) => {
+    const { _id } = req.body
+    SosoModel.deleteMany({'$or':[{_id},{parentId:_id}]},(err,data) => {
+        if(err){
+            res.send({
+                msg:'error',
+                code:1
+            })
+        }else{
+            res.send({
+                msg:'success',
+                code:0,
+                data
+            })
+        }
+    })
+})
+// 根据_id修改名字
+router.post('/soso/updatename',(req,res) => {
+    const { _id, name } = req.body
+    SosoModel.findByIdAndUpdate({_id},{name},(err,data) => {
+        if(err){
+            res.send({
+                code:1,
+                msg:'error'
+            })
+        }else{
+            res.send({
+                code:0,
+                msg:'success',
+                data
+            })
+        }
+    })
+})
 module.exports=router;
